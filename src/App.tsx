@@ -1,25 +1,51 @@
-import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import {useDispatch} from "react-redux";
+// import {countMinus, countPlus, minusCounters, plusCounters, startInt} from "./redux/reducers";
+import {useEffect} from "react";
+import {UseTypeSelector} from "./hooks/UseTypeSelector";
+import {actionTypes} from "./types";
 
 function App() {
+  const dispatch = useDispatch()
+  const {counters} = UseTypeSelector(state => state)
+
+  useEffect(()=>{
+    counters.map((el)=>el.isFourth? el.startInt===false?intervalClick(el.id):null:null)
+  },[counters.length])
+
+
+  const intervalClick = (id:number) => {
+    setInterval(()=>{
+      dispatch({type:actionTypes.COUNT_PLUS,payload: id})
+    },1000)
+    dispatch( {type:actionTypes.START_INT,payload: id})
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+      <div>
+        {counters?.map((el)=><div className="counter" key={el.id}>
+          {el.isFourth?
+              <a>
+                {el.count}
+              </a>:
+              <div>
+                <button onClick={()=>  dispatch({type:actionTypes.COUNT_PLUS,payload: el.id})}> + </button>
+                <a  >{el.count}</a>
+                <button onClick={()=>  dispatch({type:actionTypes.COUNT_MINUS,payload: el.id})}> - </button>
+              </div>
+          }
+        </div>)}
+        <button onClick={()=> dispatch({type:actionTypes.COUNTERS_PLUS})}>
+          add new counter
+        </button>
+        <div>
+          <button onClick={()=> dispatch( {type:actionTypes.COUNTERS_MINUS})}>
+            delete counter
+          </button>
+        </div>
+
+      </div>
+
   );
 }
 
